@@ -21,8 +21,8 @@ services:
     build: ./collector
     container_name: collector
     environment:
-      EXCHANGES: "binance"
-      SYMBOLS: "BTC/USDT,ETH/USDT"
+      EXCHANGES: "binance,poloniex"
+      SYMBOLS: "BTC/USDT,ETH/USDT,USDT/USDC,XRP/USDT,BNB/USDT,SOL/USDT,USDC/USDT,TRX/USDT,DOGE/USDT,ADA/USDT"
       POLL_INTERVAL_SECONDS: "15"
       CCXT_ENABLE_RATE_LIMIT: "true"
       CCXT_TIMEOUT_MS: "10000"
