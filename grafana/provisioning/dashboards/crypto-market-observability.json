@@ -123,29 +123,27 @@
   "refresh": "10s",
   "schemaVersion": 39,
   "tags": ["crypto", "observability"],
-  "templating": {
+"templating": {
     "list": [
       {
         "current": { "selected": true, "text": "binance", "value": "binance" },
         "hide": 0,
         "label": "Exchange",
         "name": "exchange",
-        "options": [
-          { "selected": true, "text": "binance", "value": "binance" }
-        ],
-        "query": "binance",
-        "type": "custom"
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
+        "query": "label_values(crypto_price_last, exchange)",
+        "refresh": 1
       },
       {
         "current": { "selected": true, "text": "BTC/USDT|ETH/USDT", "value": "BTC/USDT|ETH/USDT" },
         "hide": 0,
         "label": "Symbol",
         "name": "symbol",
-        "options": [
-          { "selected": true, "text": "BTC/USDT|ETH/USDT", "value": "BTC/USDT|ETH/USDT" }
-        ],
-        "query": "BTC/USDT|ETH/USDT",
-        "type": "custom"
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
+        "query": "label_values(crypto_price_last, symbol)",
+        "refresh": 1
       }
     ]
   },
