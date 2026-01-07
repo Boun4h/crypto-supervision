@@ -9,38 +9,6 @@
     {
       "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
       "fieldConfig": { "defaults": {}, "overrides": [] },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
-      "id": 6,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
-      "targets": [
-        {
-          "expr": "crypto_price_last{exchange=~\"$exchange\", symbol=\"BTC/USDT\"}",
-          "legendFormat": "{{exchange}} BTC/USDT",
-          "refId": "A"
-        }
-      ],
-      "title": "BTC Price (Last) - Prometheus",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
-      "fieldConfig": { "defaults": {}, "overrides": [] },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
-      "id": 7,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
-      "targets": [
-        {
-          "expr": "crypto_price_last{exchange=~\"$exchange\", symbol=\"ETH/USDT\"}",
-          "legendFormat": "{{exchange}} ETH/USDT",
-          "refId": "A"
-        }
-      ],
-      "title": "ETH Price (Last) - Prometheus",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
-      "fieldConfig": { "defaults": {}, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "id": 1,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
