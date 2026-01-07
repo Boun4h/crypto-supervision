@@ -88,7 +88,7 @@
       "type": "table"
     }
   ],
-  "refresh": "10s",
+  "refresh": "1s",
   "schemaVersion": 39,
   "tags": ["crypto", "observability"],
 "templating": {
