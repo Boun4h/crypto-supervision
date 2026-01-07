@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database to store price history
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crypto
+    volumes:
+      # Initialise schema on container startup
+      - ./postgres:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  # Python collector that fetches prices and exposes Prometheus metrics
+  collector:
+    build: ./collector
+    depends_on:
+      - postgres
+    environment:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: crypto
+      # Trading pair and polling frequency can be overridden
+      SYMBOL: BTC/USDT
+      POLL_INTERVAL: 15
+    ports:
+      - "8000:8000"
+
+  # Prometheus server to scrape metrics
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - collector
+
+  # Grafana for visualisation
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - postgres
+
+  # Loki for log aggregation
+  loki:
+    image: grafana/loki:2.8.2
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml
+      - loki_data:/data/loki
+    ports:
+      - "3100:3100"
+
+  # Promtail for collecting container logs and sending them to Loki
+  promtail:
+    image: grafana/promtail:2.8.2
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/promtail-config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log:ro
+    depends_on:
+      - loki
+
+volumes:
+  loki_data:
