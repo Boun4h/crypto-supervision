@@ -1,0 +1,123 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "crypto_price_last{exchange=~\"$exchange\",symbol=~\"$symbol\"}",
+          "legendFormat": "{{exchange}} {{symbol}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Price (Last) - Prometheus",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "crypto_spread_pct{exchange=~\"$exchange\",symbol=~\"$symbol\"} * 100",
+          "legendFormat": "{{exchange}} {{symbol}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Spread (%) - Prometheus",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 3,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "rate(collector_api_errors_total[5m])",
+          "legendFormat": "{{exchange}} {{symbol}} {{error_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "API Errors rate (5m) - Prometheus",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS" },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 4,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(collector_scrape_latency_seconds_bucket[5m])) by (le, exchange))",
+          "legendFormat": "{{exchange}} p95",
+          "refId": "A"
+        }
+      ],
+      "title": "Scrape latency p95 - Prometheus",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "POSTGRESQL" },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+      "id": 5,
+      "options": { "showHeader": true },
+      "targets": [
+        {
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ts_utc as \"time\", exchange, symbol, last::float8 as last, bid::float8 as bid, ask::float8 as ask, (spread_pct*100)::float8 as spread_pct\nFROM market_ticks\nWHERE exchange = ANY(string_to_array('$exchange', '|'))\n  AND symbol = ANY(string_to_array('$symbol', '|'))\nORDER BY ts_utc DESC\nLIMIT 50;",
+          "refId": "A"
+        }
+      ],
+      "title": "Last 50 ticks (PostgreSQL)",
+      "type": "table"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["crypto", "observability"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": true, "text": "binance", "value": "binance" },
+        "hide": 0,
+        "label": "Exchange",
+        "name": "exchange",
+        "options": [
+          { "selected": true, "text": "binance", "value": "binance" }
+        ],
+        "query": "binance",
+        "type": "custom"
+      },
+      {
+        "current": { "selected": true, "text": "BTC/USDT|ETH/USDT", "value": "BTC/USDT|ETH/USDT" },
+        "hide": 0,
+        "label": "Symbol",
+        "name": "symbol",
+        "options": [
+          { "selected": true, "text": "BTC/USDT|ETH/USDT", "value": "BTC/USDT|ETH/USDT" }
+        ],
+        "query": "BTC/USDT|ETH/USDT",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": { "from": "now-6h", "to": "now" },
+  "title": "Crypto Market Observability (Open Source MVP)",
+  "version": 1
+}
