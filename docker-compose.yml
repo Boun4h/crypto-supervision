@@ -37,6 +37,8 @@ services:
       METRICS_PORT: "8000"
     ports:
       - "8000:8000"
+    volumes:
+      - ./tools:/app/tools
     depends_on:
       postgres:
         condition: service_healthy
