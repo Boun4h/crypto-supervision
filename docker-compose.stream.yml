@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: crypto
+      POSTGRES_USER: crypto
+      POSTGRES_PASSWORD: crypto
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # --- Ingestors (WS -> ticks_raw) ---
+  ingestor_binance:
+    build:
+      context: .
+      dockerfile: services/ingestor_binance/Dockerfile
+    env_file: .env.stream
+    depends_on: [redis]
+    restart: unless-stopped
+
+  ingestor_kraken:
+    build:
+      context: .
+      dockerfile: services/ingestor_kraken/Dockerfile
+    env_file: .env.stream
+    depends_on: [redis]
+    restart: unless-stopped
+
+  ingestor_poloniex:
+    build:
+      context: .
+      dockerfile: services/ingestor_poloniex/Dockerfile
+    env_file: .env.stream
+    depends_on: [redis]
+    restart: unless-stopped
+
+  # --- Normalizer (ticks_raw -> ticks_norm) ---
+  normalizer:
+    build:
+      context: .
+      dockerfile: services/normalizer/Dockerfile
+    env_file: .env.stream
+    depends_on: [redis]
+    restart: unless-stopped
+
+  # --- Writer (ticks_norm -> postgres) ---
+  writer:
+    build:
+      context: .
+      dockerfile: services/writer/Dockerfile
+    env_file: .env.stream
+    depends_on: [redis, postgres]
+    restart: unless-stopped
+
+  # --- Live Gateway (ws://localhost:8000/ws) ---
+  live_gateway:
+    build:
+      context: .
+      dockerfile: services/live_gateway/Dockerfile
+    env_file: .env.stream
+    depends_on: [redis]
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  pg_data:
