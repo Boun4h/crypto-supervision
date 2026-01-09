@@ -75,7 +75,7 @@ services:
       - postgres
     restart: unless-stopped
   
-    chat-api:
+  chat-api:
     build: ./chatbot/api
     container_name: chat-api
     environment:
@@ -90,7 +90,7 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
-
+  
   chat-ui:
     build: ./chatbot/ui
     container_name: chat-ui
