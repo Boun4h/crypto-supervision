@@ -1,7 +1,5 @@
 # Crypto Supervision Chain
 
-This repository contains a **minimal proof‑of‑concept** of a crypto observability stack inspired by the ChatGPT conversation “Chaîne de supervision IT”.
-
 The goal is to provide a basic example of how to **collect**, **transform**, **store** and **visualise** crypto‑market data using only open‑source tools.  The implementation here is intentionally simple and intended for educational purposes; it is _not_ production ready.  Nevertheless, it demonstrates how the building blocks fit together and lays the foundation for a more complete system.
 
 ## Architecture
