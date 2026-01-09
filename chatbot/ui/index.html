@@ -1,1 +1,67 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Crypto Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background:#0b0f14; color:#e6edf3; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 16px; }
+    .box { background:#111827; border:1px solid #1f2937; border-radius: 12px; padding:16px; }
+    textarea, input { width:100%; padding:10px; border-radius:10px; border:1px solid #374151; background:#0b0f14; color:#e6edf3; }
+    button { padding:10px 14px; border-radius:10px; border:0; background:#2563eb; color:white; cursor:pointer; }
+    pre { white-space: pre-wrap; background:#0b0f14; border:1px solid #1f2937; padding:12px; border-radius:10px; }
+    .row { display:flex; gap:10px; }
+    .row > div { flex:1; }
+    .hint { opacity:0.8; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Crypto Assistant</h2>
+    <div class="box">
+      <div class="row">
+        <div>
+          <label>Symbol (optionnel)</label>
+          <input id="symbol" placeholder="ex: BTC/USDT" />
+        </div>
+        <div>
+          <label>Lookback hours (optionnel)</label>
+          <input id="lookback" placeholder="ex: 6 ou 24" />
+        </div>
+      </div>
+      <p class="hint">Exemples: <code>price BTC/USDT</code> · <code>fib 6h BTC/USDT</code> · <code>fib 24h</code> · <code>help</code></p>
+      <textarea id="msg" rows="3" placeholder="Tape ta question..."></textarea>
+      <div style="margin-top:10px;">
+        <button onclick="send()">Envoyer</button>
+      </div>
+      <h3>Réponse</h3>
+      <pre id="out"></pre>
+    </div>
+  </div>
+
+<script>
+  const API_URL = "/api/chat";
+
+  async function send() {
+    const message = document.getElementById("msg").value;
+    const symbol = document.getElementById("symbol").value.trim();
+    const lookbackRaw = document.getElementById("lookback").value.trim();
+    const lookback_hours = lookbackRaw ? parseInt(lookbackRaw, 10) : null;
+
+    const payload = { message };
+    if (symbol) payload.symbol = symbol;
+    if (lookback_hours) payload.lookback_hours = lookback_hours;
+
+    document.getElementById("out").textContent = "…";
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    document.getElementById("out").textContent = data.reply || JSON.stringify(data, null, 2);
+  }
+</script>
+</body>
+</html>
 
