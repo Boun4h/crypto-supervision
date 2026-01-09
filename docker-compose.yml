@@ -74,6 +74,31 @@ services:
       - prometheus
       - postgres
     restart: unless-stopped
+  
+    chat-api:
+    build: ./chatbot/api
+    container_name: chat-api
+    environment:
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_NAME: "crypto"
+      DB_USER: "crypto"
+      DB_PASSWORD: "crypto"
+      DEFAULT_SYMBOL: "BTC/USDT"
+      DEFAULT_LOOKBACK_HOURS: "6"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  chat-ui:
+    build: ./chatbot/ui
+    container_name: chat-ui
+    ports:
+      - "8088:8080"
+    depends_on:
+      - chat-api
+    restart: unless-stopped
 
 volumes:
   pgdata:
